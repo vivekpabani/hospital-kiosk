@@ -1,6 +1,6 @@
 import os
 from social.backends.oauth import BaseOAuth2
-
+from drchrono.settings import SOCIAL_AUTH_DRCHRONO_KEY, SOCIAL_AUTH_DRCHRONO_SECRET
 
 class drchronoOAuth2(BaseOAuth2):
     """
@@ -17,7 +17,9 @@ class drchronoOAuth2(BaseOAuth2):
         ('refresh_token', 'refresh_token'),
         ('expires_in', 'expires_in')
     ]
-    # TODO: setup proper token refreshing
+
+    CLIENT_ID = SOCIAL_AUTH_DRCHRONO_KEY
+    CLIENT_SECRET = SOCIAL_AUTH_DRCHRONO_SECRET
 
     def get_user_details(self, response):
         """
