@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="post" action="/set_kiosk_pin/">
+        {% csrf_token %}
+        <table>
+            {{ kiosk_pin_form.as_table }}
+        </table>
+        <br>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock content %}
