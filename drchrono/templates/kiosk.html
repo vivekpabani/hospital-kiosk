@@ -14,13 +14,11 @@
                     <td>{{ appointment.id }}</td>
                     <td>{{ appointment.scheduled_time }}</td>
                     <td>{{ appointment.status }}
-                        <!-- form setup to update status 
-                        <form method="post" action="/">
+                        <form method="post" action="/validate_patient">
                             {% csrf_token %}
-                            {{ form }}
-                            <br>
+                            {{ checkin_form }}
+                            <input type="submit" value="Check In">
                             </form>
-                        -->
                     </td>
 
                 </tr>
