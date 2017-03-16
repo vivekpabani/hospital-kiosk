@@ -8,4 +8,5 @@ class KioskPinForm(forms.Form):
 
 class CheckInForm(forms.Form):
 
-    appointment_id = forms.IntegerField(required=True, widget=forms.HiddenInput())
+    appointment_id = forms.CharField(required=True, widget=forms.HiddenInput())
+    patient_id = forms.CharField(required=True, widget=forms.HiddenInput())
