@@ -7,5 +7,5 @@ class Doctor(models.Model):
     Model to store doctor's pin to access kiosk.
     """
 
-    user = models.OneToOneField(User)
-    pin = models.CharField(max_length=4)
+    user = models.ForeignKey(User)
+    pin = models.CharField(max_length=4, default='', blank=True)
