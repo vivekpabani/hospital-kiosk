@@ -2,10 +2,14 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from datetime import datetime
 
-from .models import Doctor
-from .forms import KioskPinForm
-
+from .models import Doctor, Appointment
+from .forms import (KioskPinForm,
+                    CheckInForm) 
+from .utils import (get_current_user_data,
+                    get_doctor_appointments,
+                    get_patient_details_by_id)
 
 @login_required
 def home(request):
@@ -53,8 +57,44 @@ def kiosk(request):
     Also provide option to toggle between doctor's kiosk.
     """
 
-    return HttpResponse('Kiosk')
+    access_token = request.user.social_auth.get(provider='drchrono').extra_data['access_token']
 
+    # fetch current user information
+    current_user = get_current_user_data(access_token) 
+    doctor_id = current_user['id'] 
+
+    # fetch today's appointments of current user
+    appointments_data = get_doctor_appointments(access_token, doctor_id) 
+
+    context = dict()
+    appointments = list()
+
+    datetime_format = '%Y-%m-%dT%H:%M:%S'
+
+    for data in appointments_data:
+        appointment_id = data['id']
+        sch$duled_time = datetime.strptime(data['scheduled_time'], datetime_format)
+        status = data['status']
+
+        # Add appointment to database, if doesn't exist.
+        if not Appointment.objects.filter(appointment_id=data['id']):
+            appointment_instance = Appointment(appointment_id=appointment_id,
+                                               scheduled_time=scheduled_time,
+                                               status=status)
+
+            appointment_instance.save()
+
+        # Add to list to display to user.
+        appointment = dict() 
+        appointment['id'] = appointment_id
+        appointment['scheduled_time'] = scheduled_time
+        appointment['status'] = status
+
+        appointments.append(appointment)
+
+    context['appointments'] = appointments
+
+    return render(request, 'kiosk.html', context)
 
 def login_view(request):
     """
