@@ -1,3 +1,6 @@
 from django import forms
 
-# forms go here
+
+class KioskPinForm(forms.Form):
+
+    pin = forms.CharField(max_length=10, label="Enter Pin")
