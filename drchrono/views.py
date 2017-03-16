@@ -73,8 +73,9 @@ def kiosk(request):
 
     for data in appointments_data:
         appointment_id = data['id']
-        sch$duled_time = datetime.strptime(data['scheduled_time'], datetime_format)
+        scheduled_time = datetime.strptime(data['scheduled_time'], datetime_format)
         status = data['status']
+        patient_id = data['patient']
 
         # Add appointment to database, if doesn't exist.
         if not Appointment.objects.filter(appointment_id=data['id']):
@@ -88,7 +89,11 @@ def kiosk(request):
         appointment = dict() 
         appointment['id'] = appointment_id
         appointment['scheduled_time'] = scheduled_time
-        appointment['status'] = status
+
+        checkin_form = CheckInForm(initial={'appointment_id':appointment_id,
+                                            'patient_id':patient_id})
+                                   
+        appointment['checkin_form'] = checkin_form
 
         appointments.append(appointment)
 
