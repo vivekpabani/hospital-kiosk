@@ -1,0 +1,52 @@
+
+.navbar {
+    background:#000033;
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+header {
+  text-align: center;
+  //background: #18BC9C;
+  background: #FFFFFF;
+  color: white;
+}
+
+header .header-container {
+  padding-top: 100px;
+  //padding-bottom: 50px;
+}
+
+header img {
+  display: block;
+  margin: 0 auto 20px;
+  height: 400px;
+  width: 450px;
+}
+
+
+header .intro-text .main-message {
+  display: block;
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  //text-transform: uppercase;
+  font-weight: 600;
+  font-size: 26pt;
+  color: #000033;
+}
+
+header .intro-text .sub-message {
+  font-size: 14pt;
+  font-weight: 400;
+  color: #000066;
+  margin-left: 150px;
+  float: right;
+  padding-right: 150px;
+}
+
+
