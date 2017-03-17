@@ -1,40 +1,43 @@
 {% extends 'base.html' %}
 
+{% block rightnav %}
+
+    <li><a href="/kiosk/"><span class="glyphicon glyphicon-log-in"></span> Patient's Kiosk</a></li>
+
+{% endblock %}
+
 {% block content %}
     <div class="col-md-8">
-        <h2>Today's Appointments <span class="today"> ({{ today }})</span></h2>
+        <h2>Today's Appointments </h2>
         <table class="table table-hover">
             <tr>
+                <th>Appointment</th>
                 <th>Patient</th>
                 <th>Scheduled time</th>
                 <th>Checkin time</th>
-                <th>Reason</th>
-                <th>Status</th>
                 <th>Wait Time</th>
+                <th>Status</th>
             </tr>
             {% for appointment in appointments %}
                 <tr>
-                    <td>{{ appointment.patient }}</td>
+                    <td>{{ appointment.appointment_id }}</td>
+                    <td>{{ appointment.patient_id }}</td>
                     <td>{{ appointment.scheduled_time }}</td>
                     <td>{{ appointment.arrival_time }}</td>
-                    <td>{{ appointment.reason }}</td>
                     <td>
-                        <!-- form setup to update status -->
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            {{ form }}
-                            <br>
-                            </form>
-
-                    </td>
-
-                    </td>
-                    <td>
-                        {% if appointment.status == 'Arrived' %}
-                            {{ appointment.arrival_time | timesince: now }} mins
+                        {% if appointment.status == "Arrived" %}
+                            {{ appointment.arrival_time|timesince }} 
                         {% else %}
-                            N/A
+                            None
                         {% endif %}
+                    </td>
+                    <td> 
+                        <form method="post" class="pure-form" action="/update_appointment_status/">
+                            {% csrf_token %}
+                            <fieldset class="pure-group"> 
+                            {{ appointment.appointment_status_form.as_p }}
+                            </fieldset>
+                        </form>
                     </td>
                 </tr>
             {% endfor %}
