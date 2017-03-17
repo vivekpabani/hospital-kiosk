@@ -4,11 +4,11 @@ from .models import Appointment
 
 class KioskPinForm(forms.Form):
 
-    pin = forms.CharField(max_length=10, label="Enter Pin")
+    pin = forms.CharField(max_length=10, label="Enter Pin", widget=forms.PasswordInput)
 
 class DoctorValidationForm(forms.Form):
 
-    pin = forms.CharField(max_length=10, label="Enter Pin")
+    pin = forms.CharField(max_length=10, label="Enter Pin", widget=forms.PasswordInput)
 
 class CheckInForm(forms.Form):
 
@@ -28,11 +28,11 @@ class DemographicsForm(forms.Form):
     appointment_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
     # make these read-only.
-    first_name = forms.CharField(max_length=50, label="First Name")
-    last_name = forms.CharField(max_length=50, label="Last Name")
+    first_name = forms.CharField(max_length=50, label="First Name", widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    last_name = forms.CharField(max_length=50, label="Last Name", widget=forms.TextInput(attrs={'readonly':'readonly'}))
     gender = forms.CharField(widget=forms.Select(choices=(('Male', 'Male'),('Female', 'Female'),('Other', 'Other'))))
 
-    address = forms.CharField(max_length=400, required=False)
+    address = forms.CharField(max_length=200, required=False, widget=forms.Textarea)
     home_phone = forms.CharField(max_length=12, required=False)
     cell_phone = forms.CharField(max_length=12, required=False)
     email = forms.EmailField(required=False)
