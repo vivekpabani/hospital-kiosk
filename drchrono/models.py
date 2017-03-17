@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import datetime
 
 class Doctor(models.Model):
     """
@@ -25,7 +25,27 @@ class Appointment(models.Model):
 
     appointment_id = models.CharField(max_length=30)
     patient_id = models.CharField(max_length=30)
-    scheduled_time = models.DateField()
-    arrival_time = models.DateField(null=True, blank=True)
-    checkup_time = models.DateField(null=True, blank=True)
+    scheduled_time = models.DateTimeField()
+    arrival_time = models.DateTimeField(null=True, blank=True)
+    checkup_time = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=status_choices)
+
+    def update_status(self, new_status):
+        """
+        Update appointment status, and change timing accordingly.
+        """
+        self.status = new_status
+
+        current_time = datetime.datetime.now()
+        if new_status == "Confirmed":
+            self.arrival_time = None
+            self.checkup_time = None
+        if new_status == "Arrived":
+            self.arrival_time = current_time
+            self.checkup_time = None
+        elif new_status == "In Session":
+            self.checkup_time = current_time
+            if not self.arrival_time:
+                self.arrival_time = current_time
+
+        self.save()
