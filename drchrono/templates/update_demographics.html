@@ -3,7 +3,9 @@
 {% block content %}
     <form method="post" action="/update_demographics/">
         {% csrf_token %}
-        {{ demographics_form }}
+        <table> 
+        {{ demographics_form.as_table }}
+        </table>
         <br>
 
         <input type="submit" value="Submit">
