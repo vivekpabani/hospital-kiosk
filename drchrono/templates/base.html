@@ -24,6 +24,8 @@
         {% if request.user.is_authenticated %}
           <ul class="nav navbar-nav navbar-right">
             <li><p class="navbar-text"> Welcome, {{ request.user.username }}! </p> </li>
+            {% block rightnav %}
+            {% endblock %}
             <li><a href="/logout_view"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
           </ul>
         {% else %}
