@@ -17,6 +17,7 @@ from .utils import (get_current_user_data,
                     update_patient_demographics,
                     update_appointment_on_server,
                     calculate_average_wait_time,
+                    sort_appointments,
                     get_patient_details_by_id)
 
 @login_required
@@ -98,6 +99,7 @@ def kiosk(request):
         except Appointment.DoesNotExist:
             appointment_instance = Appointment(appointment_id=data['id'],
                                                patient_id=data['patient'],
+                                               doctor=request.user,
                                                scheduled_time=scheduled_time,
                                                status=data['status'])
             appointment_instance.save()
@@ -116,8 +118,8 @@ def kiosk(request):
             appointment['checkin_form'] = checkin_form
 
             appointments.append(appointment)
-
-    context['appointments'] = appointments
+    sorted_appointments = sort_appointments(appointments)
+    context['appointments'] = sorted_appointments
 
     return render(request, 'kiosk.html', context)
 
@@ -247,7 +249,13 @@ def doctor_kiosk(request):
     and check the wait time of patients.
     """
 
-    appointment_instances = Appointment.objects.filter(scheduled_time__contains=datetime.date.today())
+    # get today's appointments for a doctor
+    today = datetime.datetime.today()
+    appointment_instances = Appointment.objects.filter(scheduled_time__year=today.year,
+                                                       scheduled_time__month=today.month, 
+                                                       scheduled_time__day=today.day,
+                                                       doctor = request.user)
+
     appointments = list()
 
     for appointment_instance in appointment_instances:
@@ -264,9 +272,10 @@ def doctor_kiosk(request):
         appointment['appointment_status_form'] = appointment_status_form
         appointments.append(appointment)
 
+    sorted_appointments = sort_appointments(appointments)
     average_wait_time = calculate_average_wait_time(request.user)
 
-    context = {'appointments': appointments,
+    context = {'appointments': sorted_appointments,
                'average_wait_time': average_wait_time }
 
     return render(request, 'doctor_kiosk.html', context)
@@ -328,6 +337,8 @@ def validate_doctor(request):
                 return redirect('/')
     else:
         doctor_validation_form = DoctorValidationForm()
+        context = {'doctor_validation_form': doctor_validation_form}
+
         return render(request, 'doctor_validation.html', {'doctor_validation_form': doctor_validation_form})
 
 def login_view(request):
