@@ -102,6 +102,18 @@ def calculate_average_wait_time(doctor):
 
     return int(total_wait_time/len(appointments))
 
+def sort_appointments(appointments):
+    """
+    Sort appointments based on status and scheduled_time 
+    """
+
+    status_rank = {"In Session": 1, "Arrived": 2, "Confirmed": 3, "Complete": 4}
+
+    sorted_appointments = sorted(appointments, key=lambda a: (status_rank[a['status']], a['scheduled_time'])) 
+
+    return sorted_appointments
+    
+
 
 def get_headers(access_token):
     """
