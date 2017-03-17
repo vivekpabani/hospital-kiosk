@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="post" action="/validate_doctor/">
+        {% csrf_token %}
+        <table>
+            {{ doctor_validation_form.as_table }}
+        </table>
+        <br>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock content %}
