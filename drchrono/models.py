@@ -24,6 +24,7 @@ class Appointment(models.Model):
                       ('Complete', 'Complete'))
 
     appointment_id = models.CharField(max_length=30)
+    patient_id = models.CharField(max_length=30)
     scheduled_time = models.DateField()
     arrival_time = models.DateField(null=True, blank=True)
     checkup_time = models.DateField(null=True, blank=True)
