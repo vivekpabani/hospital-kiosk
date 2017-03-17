@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^doctor_kiosk/', views.doctor_kiosk, name='doctor_kiosk'),
     url(r'^validate_patient/$', views.validate_patient, name='validate_patient'),
     url(r'^validate_patient/(?P<appointment_id>[0-9]+)/', views.validate_patient, name='validate_patient'),
+    url(r'^validate_doctor/$', views.validate_doctor, name='validate_doctor'),
     url(r'^update_demographics/$', views.update_demographics, name='update_demographics'),
     url(r'^update_demographics/(?P<appointment_id>[0-9]+)/', views.update_demographics, name='update_demographics'),
     url(r'^update_appointment_status/', views.update_appointment_status, name='update_appointment_status'),
