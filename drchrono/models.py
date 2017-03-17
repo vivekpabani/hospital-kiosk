@@ -24,6 +24,7 @@ class Appointment(models.Model):
                       ('Complete', 'Complete'))
 
     appointment_id = models.CharField(max_length=30)
+    doctor = models.ForeignKey(User)
     patient_id = models.CharField(max_length=30)
     scheduled_time = models.DateTimeField()
     arrival_time = models.DateTimeField(null=True, blank=True)
