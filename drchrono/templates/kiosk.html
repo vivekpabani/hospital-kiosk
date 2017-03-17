@@ -13,12 +13,14 @@
                 <tr>
                     <td>{{ appointment.id }}</td>
                     <td>{{ appointment.scheduled_time }}</td>
-                    <td>{{ appointment.status }}
+                    <td><a href="/validate_patient/{{ appointment.id }}/" class="btn btn-default"> Check In </a>
+                        <!--
                         <form method="post" action="/validate_patient">
                             {% csrf_token %}
                             {{ checkin_form }}
                             <input type="submit" value="Check In">
                             </form>
+                        -->
                     </td>
 
                 </tr>
