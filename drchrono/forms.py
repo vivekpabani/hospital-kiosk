@@ -6,6 +6,9 @@ class KioskPinForm(forms.Form):
 
     pin = forms.CharField(max_length=10, label="Enter Pin")
 
+class DoctorValidationForm(forms.Form):
+
+    pin = forms.CharField(max_length=10, label="Enter Pin")
 
 class CheckInForm(forms.Form):
 
