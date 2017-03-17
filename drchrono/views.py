@@ -6,6 +6,7 @@ from datetime import datetime
 
 from .models import Doctor, Appointment
 from .forms import (KioskPinForm,
+                    PatientValidationForm,
                     CheckInForm) 
 from .utils import (get_current_user_data,
                     get_doctor_appointments,
@@ -80,6 +81,7 @@ def kiosk(request):
         # Add appointment to database, if doesn't exist.
         if not Appointment.objects.filter(appointment_id=data['id']):
             appointment_instance = Appointment(appointment_id=appointment_id,
+                                               patient_id=patient_id,
                                                scheduled_time=scheduled_time,
                                                status=status)
 
@@ -100,6 +102,49 @@ def kiosk(request):
     context['appointments'] = appointments
 
     return render(request, 'kiosk.html', context)
+
+def validate_patient(request, appointment_id=None):
+    """
+    Process validation form, and validate user.
+    If validated, redirect to update_demographics
+    If not validated, render kiosk.
+
+    """
+
+    access_token = request.user.social_auth.get(provider='drchrono').extra_data['access_token']
+
+    if request.method == 'POST':
+
+        patient_validation_form = PatientValidationForm(request.POST)
+
+        if patient_validation_form.is_valid():
+
+            data = patient_validation_form.cleaned_data
+
+            first_name = data['first_name']
+            last_name = data['last_name']
+            patient_id = data['patient_id']
+
+            patient_details = get_patient_details_by_id(access_token, patient_id)
+
+            if patient_details['first_name'] == first_name and patient_details['last_name'] == last_name:
+                update_demographic_rediret = '/update_demographics/' + appointment_id + '/' + patient_id + '/'
+                return redirect(update_demographics_redirect)
+
+            return redirect('/')
+
+    elif appointment_id:
+
+        appointments = Appointment.objects.filter(appointment_id=appointment_id)
+
+        if not appointments:
+            return redirect('/')
+
+        patient_id = appointments[0].patient_id 
+
+        patient_validation_form = PatientValidationForm(initial={'patient_id':patient_id})
+
+        return render(request, 'patient_validation.html', {'patient_validation_form':patient_validation_form})
 
 def login_view(request):
     """
