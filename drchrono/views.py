@@ -2,12 +2,14 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.contrib import messages
 import datetime
 
 from .models import Doctor, Appointment
 from .forms import (KioskPinForm,
                     PatientValidationForm,
                     DemographicsForm,
+                    DoctorValidationForm,
                     AppointmentStatusForm,
                     CheckInForm) 
 from .utils import (get_current_user_data,
@@ -31,7 +33,9 @@ def home(request):
     if not doctor or doctor[0].pin == Doctor._meta.get_field('pin').get_default():
         return redirect('set_kiosk_pin/')
 
+    request.session['doctor_validated'] = False 
     request.session['kiosk_pin_set'] = True
+
     return redirect('kiosk/')
 
 def set_kiosk_pin(request):
@@ -67,6 +71,8 @@ def kiosk(request):
     # fetch current user information
     current_user = get_current_user_data(access_token) 
     doctor_id = current_user['id'] 
+
+    request.session['doctor_validated'] = False
 
     # fetch today's appointments of current user
     appointments_data = get_doctor_appointments(access_token, doctor_id) 
@@ -134,11 +140,14 @@ def validate_patient(request, appointment_id=None):
             patient_details = get_patient_details_by_id(access_token, patient_id)
 
             if patient_details['first_name'] == first_name and patient_details['last_name'] == last_name:
+
                 request.session['validated_patient_appointment'] = str(appointment_id)
                 update_demographics_redirect = '/update_demographics/' + str(appointment_id) + '/'
-                return redirect(update_demographics_redirect)
 
-            return redirect('/')
+                return redirect(update_demographics_redirect)
+            else:
+
+                return redirect('/')
 
     elif appointment_id:
 
@@ -150,7 +159,9 @@ def validate_patient(request, appointment_id=None):
 
         patient_validation_form = PatientValidationForm(initial={'appointment_id':appointment_id})
 
-        return render(request, 'patient_validation.html', {'patient_validation_form':patient_validation_form})
+        context = {'patient_validation_form':patient_validation_form}
+
+        return render(request, 'patient_validation.html', context)
 
 
 def update_demographics(request, appointment_id=None):
@@ -211,7 +222,9 @@ def update_demographics(request, appointment_id=None):
                                }
 
         demographics_form = DemographicsForm(initial = form_initial_values)
-        return render(request, 'update_demographics.html', {'demographics_form':demographics_form})
+        context = {'demographics_form': demographics_form}
+
+        return render(request, 'update_demographics.html', context)
 
     else:
         return redirect('/')
@@ -247,24 +260,53 @@ def update_appointment_status(request):
     """
     Update appointment status, and change timing accordingly.
     """
-    print("update_appointment_status")
+
     if request.method == 'POST':
+
         appointment_status_form = AppointmentStatusForm(request.POST)
+
         if appointment_status_form.is_valid():
-            print("valid form")
+
             data = appointment_status_form.cleaned_data
             appointment_id = data['appointment_id']
             status = data['status']
-            print("appointment_id", appointment_id)
+
             try:
                 appointment_instance = Appointment.objects.get(appointment_id=appointment_id)
             except Appointment.DoesNotExist:
-                print("In Except") 
                 return redirect('/doctor_kiosk/') 
 
             appointment_instance.update_status(status)
 
     return redirect('/doctor_kiosk/')    
+
+def validate_doctor(request):
+    """
+    Validate doctor with pin when he tries to access doctor kiosk.
+    """
+
+    if request.method == 'POST':
+
+        doctor_validation_form = DoctorValidationForm(request.POST)
+
+        if doctor_validation_form.is_valid():
+
+            data = doctor_validation_form.cleaned_data
+            pin = data['pin']
+
+            try:
+                doctor = Doctor.objects.get(user=request.user)
+            except Doctor.DoesNotExist:
+                return redirect('/')
+
+            if doctor.pin == pin:
+                request.session['doctor_validated'] = True 
+                return redirect('/doctor_kiosk/')
+            else:
+                return redirect('/')
+    else:
+        doctor_validation_form = DoctorValidationForm()
+        return render(request, 'doctor_validation.html', {'doctor_validation_form': doctor_validation_form})
 
 def login_view(request):
     """
