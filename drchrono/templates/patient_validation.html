@@ -3,9 +3,11 @@
 {% block content %}
     <form method="post" action="/validate_patient/">
         {% csrf_token %}
-        {{ patient_validation_form }}
+        <table>
+        {{ patient_validation_form.as_table }}
+        </table>
         <br>
 
-        <input type="submit" value="Submit">
+        <input type="submit" class="btn btn-default" value="Submit">
     </form>
 {% endblock content %}

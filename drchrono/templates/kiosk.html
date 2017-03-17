@@ -13,7 +13,8 @@
             <tr>
                 <th>Appointment ID</th>
                 <th>Scheduled time</th>
-                <th></th>
+                <th>Status</th>
+                <th>Rank</th>
             </tr>
             {% for appointment in appointments %}
                 <tr>
@@ -22,6 +23,7 @@
                     <td>
                         <a href="/validate_patient/{{ appointment.id }}/" class="btn btn-default {% if appointment.status == 'Arrived' %} disabled {% endif %}"> {% if appointment.status == 'Arrived' %} Checked In {% else %} Check In {% endif %} </a>
                     </td>
+                    <td>{% if appointment.status == "Arrived" %} {{ forloop.counter }} {% else %} N/A {% endif %}  </td>
                 </tr>
             {% endfor %}
         </table>
