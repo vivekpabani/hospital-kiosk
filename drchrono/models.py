@@ -44,9 +44,11 @@ class Appointment(models.Model):
         if new_status == "Arrived":
             self.arrival_time = current_time
             self.checkup_time = None
-        elif new_status == "In Session":
-            self.checkup_time = current_time
+        elif new_status in ("In Session", "Complete"):
+            if not self.checkup_time:  
+                self.checkup_time = current_time
             if not self.arrival_time:
                 self.arrival_time = current_time
+            
 
         self.save()
